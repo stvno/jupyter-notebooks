@@ -39,7 +39,7 @@
                     "type": "Git",
                     "git": {
                         "uri": "https://github.com/stvno/jupyter-notebooks",
-                        "ref": "2.5.1"
+                        "ref": "2.5.2"
                     },
                     "contextDir": "minimal-notebook"
                 },
