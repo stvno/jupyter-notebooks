@@ -54,7 +54,7 @@ The name of the latest build version of this image is:
 Although this image could be imported into an OpenShift cluster using ``oc import-image``, it is recommended instead that you load it using the supplied image stream definition, using:
 
 ```
-oc create -f https://raw.githubusercontent.com/jupyter-on-openshift/jupyter-notebooks/master/image-streams/s2i-minimal-notebook.json
+oc create -f https://raw.githubusercontent.com/stvno/jupyter-notebooks/develop/build-configs/s2i-minimal-notebook.json
 ```
 
 This is preferred, as it will create an image stream with tag corresponding to the Python version being used, with the underlying image reference referring to a specific version of the image on quay.io, rather than the latest build. This ensures that the version of the image doesn't change to a newer version of the image which you haven't tested.
