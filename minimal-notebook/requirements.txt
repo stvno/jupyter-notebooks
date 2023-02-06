@@ -1,10 +1,7 @@
-notebook==6.0.2
-jupyterhub==1.0.0
-jupyterlab==1.2.3
-jupyter_kernel_gateway==2.4.0
-dask<2.7.0; python_version < "3.8"
-dask==2.8.1; python_version >= "3.8"
-distributed<2.7.0; python_version < "3.8"
-distributed==2.8.1; python_version >= "3.8"
-tornado<6.0.0; python_version < "3.8"
-tornado==6.0.3; python_version >= "3.8"
+notebook==6.5.2
+jupyterhub==3.1.1
+jupyterlab==3.6.1
+jupyter_kernel_gateway==2.5.1
+dask==2023.1.1
+distributed==2023.1.1
+tornado==6.2
