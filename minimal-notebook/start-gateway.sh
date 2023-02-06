@@ -13,6 +13,4 @@ fi
 
 cd /opt/app-root/gateway
 
-source scl enable rh-nodejs18
-
 exec npm start
