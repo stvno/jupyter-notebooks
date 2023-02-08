@@ -13,33 +13,6 @@ if [ x"$KUBERNETES_SERVER" != x":" ]; then
     fi
 fi
 
-if [ -z "$OC_VERSION" ]; then
-    case "$KUBECTL_VERSION" in
-        1.10|1.10+)
-            OC_VERSION=3.10
-            ;;
-        1.11|1.11+)
-            OC_VERSION=3.11
-            ;;
-        1.12|1.12+)
-            OC_VERSION=4.0
-            ;;
-        1.13|1.13+)
-            OC_VERSION=4.1
-            ;;
-        1.14|1.14+)
-            OC_VERSION=4.2
-            ;;
-        1.15|1.15+)
-            OC_VERSION=4.3
-            ;;
-        1.16|1.16+)
-            OC_VERSION=4.3
-            ;;
-    esac
-fi
-
-export OC_VERSION
 export KUBECTL_VERSION
 
 # Setup 'oc' client configuration for the location of the OpenShift cluster.

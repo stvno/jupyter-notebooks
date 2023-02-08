@@ -1,15 +1,22 @@
-FROM centos/python-38-centos7:latest
+FROM redhat/ubi8-minimal
 
-USER root
+USER root 
 
-COPY . /tmp/src
+# install python essentials
+RUN  microdnf update && microdnf --nodocs -y  install python3-pip python3-wheel python3-setuptools\
+  && microdnf clean all
 
-RUN rm -rf /tmp/src/.git* && \
-    chown -R 1001 /tmp/src && \
-    chgrp -R 0 /tmp/src && \
-    chmod -R g+w /tmp/src && \
-    rm -rf /tmp/scripts && \
-    mv /tmp/src/.s2i/bin /tmp/scripts
+# install npm
+RUN microdnf  --nodocs -y install nodejs
+
+COPY . /tmp
+
+# RUN /bin/bash 
+
+RUN chown -R 1001 /tmp && \
+    chgrp -R 0 /tmp && \
+    chmod -R g+w /tmp && \    
+    mv /tmp/s2i/bin /tmp/scripts
 
 USER 1001
 
@@ -19,6 +26,8 @@ LABEL io.k8s.description="S2I builder for custom Jupyter notebooks." \
       io.openshift.tags="builder,jupyter" \
       io.openshift.s2i.scripts-url="image:///opt/app-root/builder"
 
+
 RUN /tmp/scripts/assemble
 
 CMD [ "/opt/app-root/builder/run" ]
+# 
