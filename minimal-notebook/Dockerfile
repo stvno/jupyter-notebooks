@@ -1,1 +1,69 @@
-Dockerfile-py38
+FROM redhat/ubi8-minimal
+
+
+# ENV NODEJS_VERSION=18
+# COPY utils/install-npm.sh install-npm.sh
+
+
+
+RUN  microdnf update 
+
+RUN microdnf install scl-utils
+
+# install python essentials
+RUN microdnf --nodocs -y  install python3-pip python3-wheel python3-setuptools
+
+RUN python3 -m pip install --upgrade pip
+
+# install npm via https://github.com/stolostron/common-nodejs-parent
+# RUN echo -e "[nodejs]\nname=nodejs\nstream=${NODEJS_VERSION}\nprofiles=\nstate=enabled\n" > /etc/dnf/modules.d/nodejs.module
+# RUN microdnf install nodejs && microdnf remove nodejs-full-i18n npm nodejs-docs
+# RUN ./install-npm.sh
+
+RUN microdnf  --nodocs -y install curl
+
+RUN microdnf clean all
+
+WORKDIR /jupyter/s2i
+
+COPY .s2i/bin .
+
+WORKDIR /jupyter/builder
+
+COPY builder .
+
+WORKDIR /jupyter/config
+
+COPY config .
+
+WORKDIR /jupyter/gateway
+
+COPY gateway .
+
+WORKDIR /jupyter/scripts
+
+COPY scripts .
+
+WORKDIR /jupyter/supervisor
+
+COPY supervisor .
+
+# RUN /bin/bash 
+
+RUN chown -R 1001 /jupyter
+RUN chgrp -R 0 /jupyter
+RUN chmod -R g+w /jupyter
+
+USER 1001
+
+LABEL io.k8s.description="S2I builder for custom Jupyter notebooks." \
+      io.k8s.display-name="Jupyter Notebook" \
+      io.openshift.expose-services="8080:http" \
+      io.openshift.tags="builder,jupyter" \
+      io.openshift.s2i.scripts-url="image:///opt/app-root/builder"
+
+
+RUN /tmp/s2i/assemble
+
+CMD [ "/opt/app-root/builder/run" ]
+# 

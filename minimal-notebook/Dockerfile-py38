@@ -5,6 +5,7 @@ FROM redhat/ubi8-minimal
 # COPY utils/install-npm.sh install-npm.sh
 
 
+
 RUN  microdnf update 
 
 RUN microdnf install scl-utils
@@ -23,19 +24,37 @@ RUN microdnf  --nodocs -y install curl
 
 RUN microdnf clean all
 
-USER 1001
+WORKDIR /jupyter/s2i
 
+COPY .s2i/bin .
 
-COPY . /tmp/src
+WORKDIR /jupyter/builder
+
+COPY builder .
+
+WORKDIR /jupyter/config
+
+COPY config .
+
+WORKDIR /jupyter/gateway
+
+COPY gateway .
+
+WORKDIR /jupyter/scripts
+
+COPY scripts .
+
+WORKDIR /jupyter/supervisor
+
+COPY supervisor .
 
 # RUN /bin/bash 
 
-RUN chown -R 1001 /tmp && \
-    chgrp -R 0 /tmp && \
-    chmod -R g+w /tmp && \    
-    mv /tmp/src/.s2i/bin /tmp/scripts
+RUN chown -R 1001 /jupyter
+RUN chgrp -R 0 /jupyter
+RUN chmod -R g+w /jupyter
 
-
+USER 1001
 
 LABEL io.k8s.description="S2I builder for custom Jupyter notebooks." \
       io.k8s.display-name="Jupyter Notebook" \
@@ -43,8 +62,13 @@ LABEL io.k8s.description="S2I builder for custom Jupyter notebooks." \
       io.openshift.tags="builder,jupyter" \
       io.openshift.s2i.scripts-url="image:///opt/app-root/builder"
 
+WORKDIR /jupyter/s2i
 
-RUN /tmp/scripts/test
+
+
+
+RUN ./assemble
+
 
 CMD [ "/opt/app-root/builder/run" ]
 # 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo 'test'
+
 set -x
 
 set -eo pipefail
