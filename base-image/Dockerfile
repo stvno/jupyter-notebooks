@@ -1,0 +1,31 @@
+FROM registry.access.redhat.com/ubi8/python-38:latest
+
+LABEL name="notebook-base-ubi8-python-3.8" \
+      summary="Python 3.8 base image for notebooks" \
+      description="Base Python 3.8 builder image based on UBI8 for notebooks" \
+      io.k8s.display-name="Python 3.8 base image for notebooks" \
+      io.k8s.description="Base Python 3.8 builder image based on UBI8 for notebooks" \
+      authoritative-source-url="https://github.com/stvno/jupyter-notebooks" \
+      io.openshift.build.commit.ref="develop" \
+      io.openshift.build.source-location="https://github.com/stvno/jupyter-notebooks/tree/develop/base-image" \
+      io.openshift.build.image="quay.io/opendatahub/notebooks:base-ubi8-python-3.8"
+
+WORKDIR /opt/app-root/bin
+
+# Install Python dependencies from requirements.txt file
+COPY requirements.txt ./
+
+RUN python -m pip install -r requirements.txt && \
+      rm -f requirements.txt
+
+# Install the oc client
+RUN curl -L https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz \
+        -o /tmp/openshift-client-linux.tar.gz && \
+    tar -xzvf /tmp/openshift-client-linux.tar.gz oc && \
+    rm -f /tmp/openshift-client-linux.tar.gz
+
+# Fix permissions to support pip in Openshift environments
+RUN chmod -R g+w /opt/app-root/lib/python3.8/site-packages && \
+      fix-permissions /opt/app-root -P
+
+WORKDIR /opt/app-root/src
