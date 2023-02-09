@@ -8,7 +8,7 @@ set -eo pipefail
 # INFO: Install everything that's required for Jupyter notebooks here.
 ########################################################################
 
-export PYTHONUSERBASE=/jupyter
+export PYTHONUSERBASE=/opt
 
 # Ensure we are using the latest pip and wheel packages.
 
@@ -24,18 +24,17 @@ pip install supervisor
 
 # Install base packages needed for running Jupyter Notebooks. 
 
-pip install -r /tmp/src/requirements.txt
+pip install -r /opt/config/requirements.txt
 
-npm cache clean --force
 
-rm -rf $HOME/.cache/yarn
-rm -rf $HOME/.node-gyp
+mkdir -p /opt/app-root/etc
+mkdir -p /opt/app-root/bin
 
 # Copy into place default config files for Jupyter and Apache webdav.
 
-cp /tmp/src/jupyter_notebook_config.py /opt/app-root/etc/
-cp /tmp/src/jupyter_kernel_gateway_config.py /opt/app-root/etc/
-cp /tmp/src/httpd-webdav.conf /opt/app-root/etc/
+cp /opt/config/jupyter_notebook_config.py /opt/app-root/etc/
+cp /opt/config/jupyter_kernel_gateway_config.py /opt/app-root/etc/
+cp /opt/config/httpd-webdav.conf /opt/app-root/etc/
 
 # This S2I assemble script is only used when creating the custom image.
 # For when running the image, or using it as a S2I builder, we use a second
@@ -43,17 +42,19 @@ cp /tmp/src/httpd-webdav.conf /opt/app-root/etc/
 # location and have the custom image use those by dropping in an image
 # metadata file which overrides the labels of the base image.
 
-mkdir -p /tmp/.s2i
+mkdir -p /opt/.s2i
 
-mv /tmp/src/builder/image_metadata.json /tmp/.s2i/image_metadata.json
+mv /opt/builder/image_metadata.json /opt/.s2i/image_metadata.json
 
-mv /tmp/src/builder /opt/app-root/builder
+mv /opt/builder /opt/app-root/builder
 
-mv /tmp/src/supervisor /opt/app-root/etc/supervisor
+mv /opt/supervisor /opt/app-root/etc/supervisor
 
-mv /tmp/src/gateway /opt/app-root/gateway
+mv /opt/gateway /opt/app-root/gateway
 
-mv /tmp/src/*.sh /opt/app-root/bin
+mv /opt/scripts/*.sh /opt/app-root/bin
+
+
 
 # Install oc command line client for OpenShift cluster.
 
@@ -72,7 +73,10 @@ echo "source /opt/app-root/etc/generate_container_user" >> /opt/app-root/etc/scl
 
 # Install packages required by the proxy process.
 
-(cd /opt/app-root/gateway &&  npm install --production)
+cd /opt/app-root/gateway
+npm install
+
+
 
 # Create additional directories.
 
@@ -100,4 +104,5 @@ rm -rf /tmp/src
 
 # Fixup permissions on directories and files.
 
-fix-permissions /opt/app-root
+## TODO: uitzoeken hoe dit werkt wat het doet enzo
+#fix-permissions.sh "/opt/app-root"
