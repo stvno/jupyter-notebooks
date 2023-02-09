@@ -1,7 +1,0 @@
-notebook==6.4.10
-jupyterhub==2.3.1
-jupyterlab==3.2.9
-jupyter_kernel_gateway==2.5.1
-dask==2021.3.0
-distributed==2021.3.0
-tornado==6.1
